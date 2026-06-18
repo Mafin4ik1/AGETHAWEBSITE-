@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AGETHA AI</title>
+  <meta name="description" content="AGETHA AI Telegram bot interface">
+  <meta name="theme-color" content="#06101f">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="AGETHA AI">
+  <meta property="og:description" content="Telegram-бот AGETHA AI со встроенным искусственным интеллектом.">
+  <meta property="og:image" content="assets/site-background.png">
+  <meta property="og:locale" content="ru_RU">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="AGETHA AI">
+  <meta name="twitter:description" content="Telegram-бот AGETHA AI со встроенным искусственным интеллектом.">
+  <meta name="twitter:image" content="assets/site-background.png">
+  <style>
+    :root {
+      color-scheme: dark;
+      --text: #f8fbff;
+      --muted: #d9e7ff;
+      --cyan: #9ae7f5;
+      --line: rgba(210, 240, 255, 0.52);
+      --glass: rgba(130, 157, 194, 0.18);
+      --glass-dark: rgba(8, 20, 39, 0.46);
+      --shadow: rgba(0, 0, 0, 0.54);
+      font-family: "Arial Black", Arial, Helvetica, sans-serif;
+      font-size: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+      background: #020817;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    body {
+      position: relative;
+      min-height: 100vh;
+      isolation: isolate;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background:
+        linear-gradient(115deg, rgba(2, 10, 23, 0.46), rgba(11, 38, 75, 0.34), rgba(29, 18, 70, 0.44)),
+        url("assets/site-background.png") center / cover no-repeat;
+      filter: saturate(1.12) contrast(1.05);
+      transform: scale(1.02);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 30% 25%, rgba(154, 231, 245, 0.12), transparent 30rem),
+        radial-gradient(circle at 75% 35%, rgba(101, 80, 210, 0.22), transparent 30rem),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.5));
+    }
+
+    a,
+    button {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      min-height: 100vh;
+      margin: 0 auto;
+      display: grid;
+      place-items: center;
+      padding: 34px 0 120px;
+    }
+
+    .hero {
+      width: 100%;
+      display: grid;
+      justify-items: center;
+      gap: clamp(18px, 3.8vw, 36px);
+      text-align: center;
+    }
+
+    .character {
+      width: clamp(112px, 18vw, 190px);
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 28px;
+      border: 2px solid rgba(154, 231, 245, 0.54);
+      background: rgba(5, 16, 32, 0.36);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.42),
+        0 20px 60px rgba(0, 0, 0, 0.42),
+        0 0 38px rgba(154, 231, 245, 0.18);
+      backdrop-filter: blur(14px) saturate(1.4);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 58px;
+      padding: 12px 24px;
+      border: 2px solid rgba(210, 240, 255, 0.42);
+      border-radius: 28px;
+      color: #ffffff;
+      background:
+        radial-gradient(circle at 24% 15%, rgba(255, 255, 255, 0.34), transparent 36%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.06)),
+        var(--glass);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.58),
+        inset 0 -16px 36px rgba(25, 50, 95, 0.24),
+        0 18px 50px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(22px) saturate(1.55);
+      font-weight: 900;
+    }
+
+    .brand-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      background: #69e9ff;
+      box-shadow: 0 0 22px rgba(105, 233, 255, 0.9);
+    }
+
+    h1 {
+      max-width: 980px;
+      margin: 0;
+      font-size: clamp(4.5rem, 15vw, 12rem);
+      line-height: 0.86;
+      letter-spacing: 0;
+      text-transform: uppercase;
+      text-shadow: 0 22px 70px rgba(0, 0, 0, 0.68);
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      justify-content: center;
+      width: min(860px, 100%);
+    }
+
+    .glass-button {
+      position: relative;
+      width: 100%;
+      min-height: 84px;
+      padding: 16px 20px;
+      display: grid;
+      place-items: center;
+      border-radius: 22px;
+      color: #ffffff;
+      background:
+        radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.48), transparent 27%),
+        radial-gradient(circle at 75% 64%, rgba(255, 255, 255, 0.14), transparent 28%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.08)),
+        var(--glass-dark);
+      border: 2px solid var(--line);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -18px 40px rgba(20, 42, 82, 0.28),
+        0 22px 64px var(--shadow);
+      backdrop-filter: blur(24px) saturate(1.65);
+      overflow: hidden;
+      text-decoration: none;
+    }
+
+    .glass-button::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border-radius: 18px;
+      background: linear-gradient(112deg, transparent 10%, rgba(255, 255, 255, 0.26), transparent 58%);
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .glass-button::after,
+    .support-button::after {
+      content: "";
+      position: absolute;
+      inset: -80%;
+      border-radius: inherit;
+      background:
+        repeating-radial-gradient(circle at 35% 45%, rgba(154, 231, 245, 0.28) 0 2px, transparent 3px 12px),
+        linear-gradient(110deg, transparent 25%, rgba(255, 255, 255, 0.28), transparent 62%);
+      opacity: 0;
+      transform: translateX(-22%) rotate(10deg);
+      pointer-events: none;
+    }
+
+    .glass-button:hover::after,
+    .support-button:hover::after,
+    .glass-button:focus-visible::after,
+    .support-button:focus-visible::after {
+      animation: water-wave 900ms ease-out;
+    }
+
+    @keyframes water-wave {
+      0% {
+        opacity: 0;
+        transform: translateX(-28%) rotate(10deg) scale(0.95);
+      }
+      42% {
+        opacity: 0.75;
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(24%) rotate(10deg) scale(1.05);
+      }
+    }
+
+    .glass-button span,
+    .glass-button small {
+      position: relative;
+      z-index: 1;
+      display: block;
+    }
+
+    .glass-button span {
+      font-size: clamp(1.05rem, 2.5vw, 1.55rem);
+      font-weight: 950;
+      text-shadow: 0 8px 24px rgba(0, 0, 0, 0.58);
+    }
+
+    .glass-button small {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.35;
+    }
+
+    .support-button {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 4;
+      min-width: 190px;
+      min-height: 58px;
+      padding: 0 24px;
+      border-radius: 18px;
+      border: 2px solid rgba(154, 231, 245, 0.72);
+      color: #d9f8ff;
+      background:
+        radial-gradient(circle at 25% 18%, rgba(255, 255, 255, 0.26), transparent 34%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04)),
+        rgba(4, 18, 28, 0.58);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.42),
+        0 16px 46px rgba(0, 0, 0, 0.42);
+      backdrop-filter: blur(20px) saturate(1.6);
+      font-weight: 950;
+      letter-spacing: 0.04em;
+      overflow: hidden;
+    }
+
+    .glass-button:focus-visible,
+    .support-button:focus-visible,
+    .close:focus-visible,
+    .contact-link:focus-visible {
+      outline: 3px solid rgba(154, 231, 245, 0.36);
+      outline-offset: 5px;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: none;
+      place-items: center;
+      padding: 22px;
+      background: rgba(1, 4, 18, 0.62);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal.is-open {
+      display: grid;
+    }
+
+    .modal-card {
+      width: min(780px, 100%);
+      max-height: min(760px, calc(100vh - 44px));
+      overflow: auto;
+      padding: clamp(22px, 4vw, 34px);
+      border: 2px solid rgba(210, 240, 255, 0.34);
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.18), transparent 28%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.07)),
+        rgba(8, 19, 40, 0.78);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.42),
+        0 34px 100px rgba(0, 0, 0, 0.58);
+      backdrop-filter: blur(30px) saturate(1.55);
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .modal h2 {
+      margin: 0;
+      font-size: clamp(1.55rem, 4vw, 2.35rem);
+      letter-spacing: 0;
+    }
+
+    .close {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      flex: 0 0 auto;
+      border-radius: 14px;
+      color: white;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+    }
+
+    .faq-item {
+      padding: 18px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.16);
+      text-align: left;
+    }
+
+    .faq-item h3 {
+      margin: 0 0 10px;
+      color: #ffffff;
+      font-size: 1.08rem;
+    }
+
+    .faq-item p,
+    .support-copy {
+      margin: 0;
+      color: #d9e6ff;
+      line-height: 1.68;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .contact-link {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 2px solid rgba(154, 231, 245, 0.5);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.06)),
+        rgba(10, 25, 48, 0.48);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.34);
+      font-weight: 900;
+    }
+
+    .telegram-icon {
+      width: 25px;
+      height: 25px;
+      flex: 0 0 auto;
+    }
+
+    .commands-panel {
+      width: min(860px, 100%);
+      padding: 16px;
+      border: 2px solid rgba(154, 231, 245, 0.36);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(255, 255, 255, 0.16), transparent 30%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05)),
+        rgba(5, 15, 30, 0.52);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.34),
+        0 22px 64px rgba(0, 0, 0, 0.38);
+      backdrop-filter: blur(24px) saturate(1.55);
+      text-align: left;
+    }
+
+    .commands-panel h2 {
+      margin: 0 0 12px;
+      color: #ffffff;
+      font-size: clamp(1.3rem, 3vw, 2rem);
+      letter-spacing: 0;
+    }
+
+    .commands-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .command-chip {
+      min-height: 42px;
+      display: grid;
+      place-items: center;
+      padding: 8px;
+      border-radius: 14px;
+      border: 1px solid rgba(154, 231, 245, 0.38);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.06)),
+        rgba(10, 25, 48, 0.45);
+      color: #eafaff;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.26);
+      font-size: 16px;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .share-status {
+      min-height: 22px;
+      margin: -18px 0 0;
+      color: #d9f8ff;
+      font-size: 16px;
+      text-align: center;
+      text-shadow: 0 6px 20px rgba(0, 0, 0, 0.52);
+    }
+
+    .site-footer {
+      width: min(1180px, calc(100% - 32px));
+      margin: -82px auto 0;
+      padding: 26px 0 28px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .footer-glass {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+      gap: 22px;
+      padding: 24px;
+      border: 2px solid rgba(154, 231, 245, 0.38);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.16), transparent 28%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05)),
+        rgba(5, 15, 30, 0.64);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.34),
+        0 24px 72px rgba(0, 0, 0, 0.44);
+      backdrop-filter: blur(24px) saturate(1.5);
+    }
+
+    .footer-title,
+    .copyright {
+      margin: 0;
+      color: #ffffff;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .footer-text {
+      margin: 8px 0 0;
+      line-height: 1.7;
+    }
+
+    .social-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .social-link,
+    .social-item {
+      min-height: 46px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(154, 231, 245, 0.36);
+      background: rgba(255, 255, 255, 0.08);
+      color: #e8f8ff;
+      line-height: 1.35;
+    }
+
+    .social-link:focus-visible {
+      outline: 3px solid rgba(154, 231, 245, 0.36);
+      outline-offset: 4px;
+    }
+
+    .social-icon {
+      width: 23px;
+      height: 23px;
+      flex: 0 0 auto;
+      color: var(--cyan);
+    }
+
+    @media (max-width: 700px) {
+      .page {
+        width: min(100% - 22px, 520px);
+        padding-bottom: 110px;
+      }
+
+      h1 {
+        font-size: clamp(3.2rem, 20vw, 6.2rem);
+      }
+
+      .brand {
+        min-height: 52px;
+        padding: 10px 16px;
+      }
+
+      .glass-button {
+        min-height: 78px;
+      }
+
+      .actions {
+        grid-template-columns: 1fr;
+      }
+
+      .commands-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .support-button {
+        right: 14px;
+        bottom: 14px;
+        min-width: 164px;
+      }
+
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .site-footer {
+        margin-top: -74px;
+      }
+
+      .footer-glass {
+        grid-template-columns: 1fr;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero" aria-labelledby="site-title">
+      <div class="brand">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <span>AI Telegram Bot</span>
+      </div>
+
+      <img class="character" src="assets/character.png" alt="Персонаж AGETHA AI">
+
+      <h1 id="site-title">AGETHA AI</h1>
+
+      <div class="actions">
+        <button class="glass-button" type="button" data-open="faq">
+          <span>Частые вопросы</span>
+          <small>Информация о проекте и создателях</small>
+        </button>
+        <a class="glass-button" href="https://t.me/AgethaAibot" target="_blank" rel="noopener">
+          <span>Перейти к боту</span>
+          <small>Открыть AgethaAibot в Telegram</small>
+        </a>
+        <button class="glass-button" type="button" id="share-button">
+          <span>Поделиться</span>
+          <small>Скопировать ссылку или открыть шаринг</small>
+        </button>
+      </div>
+
+      <p class="share-status" id="share-status" aria-live="polite"></p>
+
+      <section class="commands-panel" aria-labelledby="commands-title">
+        <h2 id="commands-title">Команды бота</h2>
+        <div class="commands-grid">
+          <div class="command-chip">/start</div>
+          <div class="command-chip">/help</div>
+          <div class="command-chip">/clear</div>
+          <div class="command-chip">/status</div>
+          <div class="command-chip">/fact</div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <button class="support-button" type="button" data-open="support">ПОДДЕРЖКА</button>
+
+  <section class="modal" id="faq-modal" aria-hidden="true" aria-labelledby="faq-title" role="dialog">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 id="faq-title">Частые вопросы</h2>
+        <button class="close" type="button" data-close aria-label="Закрыть окно">x</button>
+      </div>
+
+      <article class="faq-item">
+        <h3>К чему относится сайт?</h3>
+        <p>Он относится к новой разработке бота в Telegram под поддержкой искусственного интеллекта, под управлением API GROQ и GEMINI.</p>
+      </article>
+
+      <article class="faq-item">
+        <h3>Под чьим управлением был придуман бот?</h3>
+        <p>Бот был придуман создателем под псевдонимом ioloaa_dwd, также известным как ⃤ ⃤ ⃤ Doll/Aiden (Ioloaa) ⃤ ⃤ ⃤. В проектировании также участвовал htlz_nat под псевдонимом 𝑷𝖗⟡𝒃𝓵𝙚𝓶𝖆𝓽𝙞с, который является тестировщиком проекта.</p>
+      </article>
+
+      <article class="faq-item">
+        <h3>Сайт как то относится к другим проектам?</h3>
+        <p>Нет, сайт никак не относится к проекту, он просто является последним штрихом для опыта. Создатель сайта взял на себя инициативу, а бот и его авторство принадлежат Doll/Aiden(Ioloaa).</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="modal" id="support-modal" aria-hidden="true" aria-labelledby="support-title" role="dialog">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 id="support-title">ПОДДЕРЖКА</h2>
+        <button class="close" type="button" data-close aria-label="Закрыть окно">x</button>
+      </div>
+
+      <p class="support-copy">Выберите Telegram-контакт для связи с поддержкой.</p>
+
+      <div class="contact-grid">
+        <a class="contact-link" href="https://t.me/ioloaa_dwd" target="_blank" rel="noopener">
+          <svg class="telegram-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M21.8 4.4 18.6 20c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.3-5.1 9.4-8.5c.4-.4-.1-.6-.6-.2L5.9 13.5 1 12c-1.1-.3-1.1-1.1.2-1.6L20.3 3c.9-.3 1.7.2 1.5 1.4Z"/>
+          </svg>
+          ioloaa_dwd
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer" aria-label="Социальные сети и права">
+    <div class="footer-glass">
+      <div>
+        <p class="copyright">By created SVYATOY_XVII все права защищены</p>
+        <p class="footer-text">Социальные сети Doll/Aiden(Ioloaa).</p>
+      </div>
+
+      <div>
+        <p class="footer-title">Doll/Aiden(Ioloaa)</p>
+        <div class="social-list">
+          <a class="social-link" href="https://steamcommunity.com/profiles/76561199577163520" target="_blank" rel="noopener">
+            <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M12 2a10 10 0 0 0-9.9 8.7l5.4 2.2a2.8 2.8 0 0 1 1.6-.5h.2l2.4-3.5v-.1a3.8 3.8 0 1 1 3.8 3.8h-.1l-3.5 2.5v.2a2.8 2.8 0 0 1-5.5.7l-3.9-1.6A10 10 0 1 0 12 2Zm-3 14.9-1.2-.5a2 2 0 0 0 1 1.1 2 2 0 0 0 2.6-.9 1.9 1.9 0 0 0-.9-2.6 1.9 1.9 0 0 0-1.5-.1l1.3.5a1.4 1.4 0 1 1-1.1 2.5Zm6.5-5.6a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Zm0-.7a1.8 1.8 0 1 1 0-3.6 1.8 1.8 0 0 1 0 3.6Z"/>
+            </svg>
+            Steam profile
+          </a>
+          <a class="social-link" href="https://x.com/ioloaa" target="_blank" rel="noopener">
+            <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M18.9 2.8h3.3l-7.2 8.3 8.5 11.1h-6.7l-5.2-6.8-6 6.8H2.3l7.7-8.8L1.8 2.8h6.9l4.7 6.2 5.5-6.2Zm-1.2 17.5h1.8L7.7 4.6H5.8l11.9 15.7Z"/>
+            </svg>
+            X: ioloaa
+          </a>
+          <a class="social-link" href="https://www.tiktok.com/@nkosiioloaa" target="_blank" rel="noopener">
+            <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M17.3 5.2c-.9-1-1.3-2.1-1.4-3.2h-3.4v13.1a2.8 2.8 0 1 1-2-2.7V9a6.2 6.2 0 1 0 5.4 6.1V8.4c1.4 1 3 1.6 4.8 1.7V6.7c-1.3-.2-2.4-.7-3.4-1.5Z"/>
+            </svg>
+            TikTok: @nkosiioloaa
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const modals = {
+      faq: document.querySelector("#faq-modal"),
+      support: document.querySelector("#support-modal"),
+    };
+
+    function openModal(name) {
+      const modal = modals[name];
+      if (!modal) return;
+      modal.classList.add("is-open");
+      modal.setAttribute("aria-hidden", "false");
+      modal.querySelector("[data-close]").focus();
+    }
+
+    function closeModal(modal) {
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
+    }
+
+    document.querySelectorAll("[data-open]").forEach((control) => {
+      control.addEventListener("click", () => openModal(control.dataset.open));
+    });
+
+    document.querySelectorAll("[data-close]").forEach((control) => {
+      control.addEventListener("click", () => closeModal(control.closest(".modal")));
+    });
+
+    document.querySelectorAll(".modal").forEach((modal) => {
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) closeModal(modal);
+      });
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        document.querySelectorAll(".modal.is-open").forEach(closeModal);
+      }
+    });
+
+    const shareButton = document.querySelector("#share-button");
+    const shareStatus = document.querySelector("#share-status");
+    const botStartUrl = "https://t.me/AgethaAibot?start=start";
+    const shareData = {
+      title: "AGETHA AI",
+      text: "Запустить Telegram-бота AGETHA AI командой /start.",
+      url: botStartUrl,
+    };
+
+    function showShareStatus(text) {
+      shareStatus.textContent = text;
+      window.clearTimeout(showShareStatus.timer);
+      showShareStatus.timer = window.setTimeout(() => {
+        shareStatus.textContent = "";
+      }, 2600);
+    }
+
+    shareButton.addEventListener("click", async () => {
+      try {
+        if (navigator.share) {
+          await navigator.share(shareData);
+          showShareStatus("Ссылка отправлена.");
+          return;
+        }
+
+        await navigator.clipboard.writeText(shareData.url);
+        showShareStatus("Ссылка скопирована.");
+      } catch (error) {
+        showShareStatus("Не удалось поделиться ссылкой.");
+      }
+    });
+  </script>
+</body>
+</html>
